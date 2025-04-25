@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import { useCallback } from "react";
 
@@ -7,6 +7,9 @@ function App() {
   const [numberAllowed, setNumberAllowed] = useState(false);
   const [charAllowed, setCharAllowed] = useState(false);
   const [password, setPassword] = useState("");
+
+  //  useRef() use ref have context of the value. 
+  const passwordRef = useRef(null)
 
   const generatePassword = useCallback(() => {
     let pass = "";
@@ -22,13 +25,18 @@ function App() {
     setPassword(pass);
   }, [length, numberAllowed, charAllowed]);
 
-  //  Page load first time  run useEffect() 
+  //  Page load first time  run useEffect()
   useEffect(
     () => {
-      generatePassword()
+      generatePassword();
     },
     [length, numberAllowed, charAllowed] // list of dependencies if any dependencies change we run
   );
+
+  const copyPasswordToClipboard = () => {
+    window.navigator.clipboard.writeText(password);
+    passwordRef.current?.select()
+  };
 
   return (
     <div
@@ -41,10 +49,14 @@ function App() {
           className="outline-none w-full py-1 px-3 bg-white"
           placeholder="Password"
           readOnly
+          ref={passwordRef}
           type="text"
           value={password}
         />
-        <button className="outline-none bg-blue-700 text-white px-3 py-0.5 shrink-0">
+        <button
+          onClick={copyPasswordToClipboard}
+          className="outline-none bg-blue-700 text-white px-3 py-0.5 shrink-0"
+        >
           copy
         </button>
       </div>
